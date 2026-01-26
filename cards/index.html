@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pack Opener Game</title>
+    <style>
+        .grade-container {
+            display: flex; 
+            justify-content: space-between; 
+            margin-top: 10px; 
+        }
+    
+        .grade-column {
+            flex: 1; 
+            text-align: center; 
+            margin: 0 10px; 
+        }
+    
+        .character-logo {
+            width: 50px; 
+            height: auto; 
+            margin: 5px; 
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200vh;
+            background-color: #121212;
+            margin: 0;
+            color: #ffffff;
+        }
+        .container {
+            text-align: center;
+            background-color: #1e1e1e;
+            border: 2px solid #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        .random-images-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; 
+        }
+        .random-image {
+            position: absolute;
+            border-radius: 5px;
+            opacity: 0.7; 
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .card {
+            margin: 10px 0;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            text-align: center;
+            width: 300px;
+            height: 600px; 
+            border: 2px solid;
+            position: relative;
+            margin-bottom: 40px;
+            overflow: hidden;
+            box-sizing: border-box;
+            background-color: inherit;
+            color: #FFD700;
+        }
+        .card img {
+            width: 40%;
+            height: auto;
+            border-radius: 4px;
+        }
+        .card .card-info {
+            margin-top: 10px;
+        }
+        .card .card-name {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .card .card-description {
+            margin-top: 5px;
+            font-size: 1em;
+            color: #555;
+            white-space: pre-wrap; 
+        }
+        .card .image-container {
+        margin-bottom: 15px;
+        background-color: #fff; 
+        padding: 5px; 
+        border: 2px solid #ccc; 
+        border-radius: 3px; 
+    }
+        .card .image-container.border-image {
+            border: 2px solid #ccc; 
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .card-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            background-color: #fff;
+            padding: 5px 10px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            margin-top: 20px; 
+            margin-bottom: 20px; 
+        }
+        .individual-card-value {
+            font-size: 1em;
+            font-weight: normal;
+            color: #333;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .card.legendary {
+             color: #000000 !important; 
+         }
+         .card.legendary .card-description {
+             color: #000000 !important; 
+         }
+         .card.legendary .individual-card-value {
+             color: #000000 !important; 
+         }
+         .card.synergized {
+             color: #000000 !important; 
+         }
+         .card.event .card-description {
+             color: #000000 !important; 
+         }
+         .card.event .individual-card-value {
+             color: #000000 !important; 
+         }
+         .card.event .character-path {
+             color: #000000 !important; 
+         }
+         .card.event {
+             color: #000000 !important; 
+         }
+         .card.event .card-description {
+             color: #000000 !important; 
+         }
+         .card.event .individual-card-value {
+             color: #000000 !important; 
+         }
+         .card.event .character-path {
+             color: #000000 !important; 
+         }
+         .silhouette {
+            filter: grayscale(100%);
+            opacity: 0.5;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-height: 80%;
+            overflow-y: auto;
+            position: relative;
+        }
+        .close {
+        color: #aaa;
+        position: sticky; 
+        top: 0;
+        right: 0;
+        font-size: 28px;
+        font-weight: bold;
+        z-index: 1000; 
+    }
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+        .collection-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        #closeCollectionButton {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    font-size: 16px;
+    z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>P3STATION Trading Card Game</h1>
+        <div id="cardValue"></div> 
+        <div id="results"></div>
+        <button onclick="showPreviousCard()">&lt;</button>
+        <button onclick="showNextCard()">&gt;</button>
+        <button onclick="generatePack()">Open New Pack</button>
+        <button onclick="showCollection()">View Collection</button>
+        <button onclick="redeemCode()">Redeem Code</button>
+    </div>
+
+    <div id="collectionModal" class="modal" style= "display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeCollection()">&times;</span>
+            <div class="collection-container" id="collectionContainer"></div>
+        </div>
+    </div>
+    <script src="cardPool.js"></script>
+    <script>
+        // Add codes and their rewards here. Each code maps to an array of card names to unlock.
+var codeRewards = {
+    'MASTER MEDAL': ["Michiko Yong's P3 Cultural Carnival 2022 Participant Card"],
+    'BRAVE VOICE': ["Fortner Putero Utomo's P3 Cultural Carnival 2022 Participant Card"],
+    'BRIDGE BUILDER': ["Abigail Natania Wijaya's P3 Cultural Carnival 2022 Participant Card"],
+    'PRAGMATIC POET': ["Cindy Wijaya's Kartini's Day and Petra Birthday 2023 Participant Card"],
+    'HARMONY TUNER': ["Erick Ardian Wijaya's P3 Cultural Carnival 2022 Participant Card"],
+    'LIGHT OF HOPE': ["Miracle Celeste Santoso's P3 Cultural Carnival 2022 Participant Card"],
+    'LEADERSHIP MEDAL': ["Jesselyn Angelica Cristianto's P3 Cultural Carnival 2022 Participant Card"],
+    'ENERGY STAR': ["Richelle Zorine Effendy's P3 Cultural Carnival 2022 Participant Card"],
+    'UNITY ORATOR': ["Henokh Josef Indra's Kartini's Day and Petra Birthday 2023 Participant Card"],
+    'ECO WORDSMITH': ["Ricco Leonard Susanto's Kartini's Day and Petra Birthday 2023 Participant Card"],
+    'COMPASSIONATE BARD': ["Sara Jeovanna Faith Sundoro's Kartini's Day and Petra Birthday 2023 Participant Card"],
+    'CREATIVE COMMUNICATOR': ["Kelvin Konggoro's Kartini's Day and Petra Birthday 2023 Participant Card"],
+    'VOICE UNLEASHED': ["Zaifa Zaskia Hantoro's Kartini's Day and Petra Birthday 2023 Participant Card"],
+    'SCHLOLARLY SCRIBE': ["Edbert Kenzie Sujonggo's Kartini's Day and Petra Birthday 2023 Participant Card"],
+    'SUPERPACK': ['Angela Tiffany Tan', 'Abigail Natania Wijaya\'s Alternate Skill Set'], // Example: code gives 2 cards
+    // Add more codes here
+};
+
+        const packOdds ={
+            common: 35,
+            uncommon: 28,
+            rare: 15,
+            epic: 10,
+            synergized: 7,
+            mythic: 4,
+            legendary:1
+        }
+        
+
+
+        let cardsToShow = [];
+        let currentIndex = 0;
+        let currentCardValue = 0;
+
+        function getRandomCard() {
+            const weightedPool = [];
+            cardPool.forEach(card => {
+                if (card) { 
+                    const odds = packOdds[card.type]; 
+                    if (odds) {
+                        for (let i = 0; i < odds; i++) {
+                            weightedPool.push(card);
+                        }
+                    }
+                }
+            });
+
+            if (weightedPool.length === 0) {
+                console.error("No cards available in the weighted pool.");
+                return null; 
+            }
+
+            const randomIndex = Math.floor(Math.random() * weightedPool.length);
+            const card = weightedPool[randomIndex];
+
+            if (!card) {
+                console.error("Selected card is undefined.");
+                return null; 
+            }
+
+            card.description = generateSkillsDescription(card.skills);
+            card.actualValue = getCardValue(card.type); 
+
+            currentCardValue = card.actualValue; 
+            return card;
+        }
+
+        function generateSkillsDescription(skills) {
+    const skillTypeMap = {
+        'P': 'Physical Growth',
+        'E': 'Emotional Intelligence',
+        'T': 'Talent Development',
+        'R': 'Relationship with God',
+        'A': 'Academic Excellence'
+    };
+
+    let description = 'Skills:\n';
+    for (let skill in skills) {
+        const skillInfo = skills[skill];
+        if (skillInfo.description) {
+            description += `${skillInfo.description}\n\n`; 
+        } else {
+            //const skillTypeFull = skillTypeMap[skillInfo.type] || 'Unknown';
+            //description += `${skillInfo.name} (Type: ${skillTypeFull}): `;
+            description += `${skillInfo.name}: `;
+            description += `Cooldown: ${skillInfo.cooldown}, `;
+            if (skillInfo.damage) description += `Damage: ${skillInfo.damage}, `;
+            if (skillInfo.heal) description += `Heal: ${skillInfo.heal}, `;
+            if (skillInfo.skipTurn) description += `Stun: Yes`;
+            else description += `Stun: No`;
+            description += '\n\n';
+        }
+    }
+    return description;
+}
+
+function getCardValue(type) {
+    let value = 0;
+    let equation = ''; 
+
+    switch (type) {
+    case 'common':
+        value = 1 + Math.random() * 2;
+        equation = `Common Card Value = 1 + Math.random() * 2 => ${value.toFixed(2)}`;
+        break;
+    case 'uncommon':
+        value = 3 + Math.random() * 3;
+        equation = `Uncommon Card Value = 3 + Math.random() * 3 => ${value.toFixed(2)}`;
+        break;
+    case 'rare':
+        value = 6 + Math.random() * 4;
+        equation = `Rare Card Value = 6 + Math.random() * 4 => ${value.toFixed(2)}`;
+        break;
+    case 'event':
+        value = 10
+        break;
+    case 'epic':
+        value = 10 + Math.random() * 10;
+        equation = `Epic Card Value = 10 + Math.random() * 10 => ${value.toFixed(2)}`;
+        break;
+    case 'synergized':
+        value = 25 + Math.random() * 15;
+        equation = `Synergized Card Value = 25 + Math.random() * 15 => ${value.toFixed(2)}`;
+        break;
+    case 'mythic':
+        value = 50 + Math.random() * 30;
+        equation = `Mythic Card Value = 50 + Math.random() * 30 => ${value.toFixed(2)}`;
+        break;
+    case 'legendary':
+        value = 85 + Math.random() * 40;
+        equation = `Legendary Card Value = 85 + Math.random() * 40 => ${value.toFixed(2)}`;
+        break;
+    default:
+        value = 0; 
+        equation = `Unknown Card Type, Value = 0`;
+}
+
+
+    console.log(`Card Type: ${type}`);
+    console.log(`Value Equation: ${equation}`);
+
+    return value.toFixed(2); 
+}
+
+document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowLeft') {
+                showPreviousCard();
+            } else if (event.key === 'ArrowRight') {
+                showNextCard();
+            } 
+            if (event.key === 'Enter') {
+                generatePack();
+            }
+        });
+
+const collection = JSON.parse(localStorage.getItem('cardCollection')) || [];
+
+        function updateCollection(cardName) {
+            if (!collection.includes(cardName)) {
+                collection.push(cardName);
+                localStorage.setItem('cardCollection', JSON.stringify(collection));
+            }
+        }
+
+        function isCardCollected(cardName) {
+            return collection.includes(cardName);
+        }
+
+function showCollection() {
+    const collectionContainer = document.getElementById('collectionContainer');
+    collectionContainer.innerHTML = ''; 
+
+    const sortedCards = cardPool.sort((a, b) => {
+        const rarityOrder = ['common', 'uncommon', 'rare', 'event', 'epic', 'synergized', 'mythic', 'legendary'];
+        const rarityComparison = rarityOrder.indexOf(a.type) - rarityOrder.indexOf(b.type);
+        if (rarityComparison !== 0) return rarityComparison;
+        return a.name.localeCompare(b.name);
+    });
+
+    cardPool.forEach(card => {
+        const cardElement = document.createElement('div');
+        cardElement.className = 'card';
+        cardElement.style.backgroundColor = getBorderColor(card.type); 
+        // ... existing code ...
+cardElement.style.color = (card.type === 'synergized' || card.type === 'event' || card.type === 'legendary') ? '#000' : '#FFD700';
+// ... existing code ...
+
+        const cardName = document.createElement('div');
+        cardName.className = 'card-name';
+        cardName.textContent = isCardCollected(card.name) ? card.name : 'Unknown Card';
+        cardElement.appendChild(cardName);
+
+        const cardImageContainer = document.createElement('div');
+        cardImageContainer.classList.add('image-container');
+        cardImageContainer.style.backgroundColor = '#fff'; 
+        cardImageContainer.style.border = '2px solid #ccc'; 
+
+        const cardImage = document.createElement('img');
+        cardImage.src = isCardCollected(card.name) ? card.image : 'silhouette.png';
+        cardImage.alt = card.name;
+        cardImageContainer.appendChild(cardImage);
+        cardElement.appendChild(cardImageContainer);
+
+        if (isCardCollected(card.name)) {
+            const cardSkills = document.createElement('div');
+            cardSkills.className = 'card-description';
+            cardSkills.style.color = (card.type === 'synergized' || card.type === 'event' || card.type === 'legendary') ? '#000' : '#FFD700';
+            cardSkills.innerHTML = generateSkillsDescription(card.skills);
+            cardElement.appendChild(cardSkills);
+
+            
+            const cardValue = document.createElement('div');
+            cardValue.className = 'card-value';
+            cardValue.textContent = `Value: ${card.actualValue}`;
+            cardElement.appendChild(cardValue);
+
+            const characterPath = document.createElement('div');
+            characterPath.classList.add('character-path');
+            characterPath.textContent = card.characterPath; 
+            characterPath.style.color = (card.type === 'synergized' || card.type === 'event' || card.type === 'legendary') ? '#000' : '#FFD700';
+            cardElement.appendChild(characterPath);
+
+            const gradeContainer = document.createElement('div');
+            gradeContainer.classList.add('grade-container');
+
+            const seventhGradeContainer = document.createElement('div');
+            seventhGradeContainer.classList.add('grade-column');
+
+            const eighthGradeContainer = document.createElement('div');
+            eighthGradeContainer.classList.add('grade-column');
+
+            const ninthGradeContainer = document.createElement('div');
+            ninthGradeContainer.classList.add('grade-column');
+
+            const characterClasses = card.characterPath.split(','); 
+            characterClasses.forEach(characterClass => {
+                const characterClassTrimmed = characterClass.trim(); 
+                const characterLogo = document.createElement('img');
+                characterLogo.src = getCharacterLogo(characterClassTrimmed) || 'no.png'; 
+                characterLogo.alt = `Character Logo ${characterClassTrimmed}`;
+                characterLogo.classList.add('character-logo');
+
+                const classText = document.createElement('div');
+                classText.textContent = characterClassTrimmed;
+
+                const logoContainer = document.createElement('div'); 
+                logoContainer.appendChild(characterLogo);
+                logoContainer.appendChild(classText);
+
+                if (characterClassTrimmed.startsWith('7')) {
+                    seventhGradeContainer.appendChild(logoContainer);
+                } else if (characterClassTrimmed.startsWith('8')) {
+                    eighthGradeContainer.appendChild(logoContainer);
+                } else if (characterClassTrimmed.startsWith('9')) {
+                    ninthGradeContainer.appendChild(logoContainer);
+                }
+            });
+
+            gradeContainer.appendChild(seventhGradeContainer);
+            gradeContainer.appendChild(eighthGradeContainer);
+            gradeContainer.appendChild(ninthGradeContainer);
+            cardElement.appendChild(gradeContainer);
+            
+        }
+
+        collectionContainer.appendChild(cardElement);
+    });
+
+    document.getElementById('collectionModal').style.display = 'flex';
+}
+
+function closeCollection() {
+    document.getElementById('collectionModal').style.display = 'none';
+}
+
+document.getElementById('closeCollectionButton').addEventListener('click', closeCollection);
+document.getElementById('closeCollectionButton').style.position = 'sticky';
+document.getElementById('closeCollectionButton').style.top = '0';
+
+        function generatePack() {
+            cardsToShow = [];
+
+            const drawnCards = new Set();
+            while (cardsToShow.length < 5) {
+                const card = getRandomCard();
+
+                if (!drawnCards.has(card.name)) {
+                    drawnCards.add(card.name);
+                    cardsToShow.push(card);
+                    updateCollection(card.name); 
+                }
+            }
+
+            cardsToShow.sort((a, b) => a.actualValue - b.actualValue);
+
+            currentIndex = 0;
+            showCard();
+            updateCardValue(); 
+        }
+
+        function updateCardValue() {
+            const totalValue = cardsToShow.reduce((sum, card) => sum + parseFloat(card.actualValue), 0); 
+            const cardValueContainer = document.getElementById('cardValue');
+            cardValueContainer.innerHTML = `<div class="card-value">Current Pack Value: ${totalValue.toFixed(2)}</div>`; 
+        }
+
+        function showCard() {
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = ''; 
+
+    const card = cardsToShow[currentIndex];
+ if (!card || (!card.characterPath && card.type !== 'item')) {
+     console.error("Card is undefined or characterPath is missing.");
+     return; 
+ }
+
+ const cardElement = document.createElement('div');
+ cardElement.classList.add('card');
+ if (card.type === 'legendary') {
+     cardElement.classList.add('legendary'); 
+ }else if (card.type === 'synergized') {
+     cardElement.classList.add('synergized');
+    }else if (card.type === 'event') {
+     cardElement.classList.add('event');
+ }
+ 
+ cardElement.style.backgroundColor = getBorderColor(card.type); 
+        cardElement.style.color = '#FFD700'; 
+
+        const cardName = document.createElement('div');
+        cardName.classList.add('card-name');
+        cardName.textContent = card.name;
+
+        const cardImageContainer = document.createElement('div');
+        cardImageContainer.classList.add('image-container');
+        cardImageContainer.style.backgroundColor = '#fff'; 
+        cardImageContainer.style.border = '2px solid #ccc'; 
+
+        const cardImage = document.createElement('img');
+        cardImage.src = card.image;
+        cardImage.alt = card.name;
+
+        const cardDescription = document.createElement('div');
+        cardDescription.classList.add('card-description');
+        cardDescription.textContent = card.description;
+        cardDescription.style.color = '#FFD700'; 
+
+        const cardIndividualValue = document.createElement('div');
+        cardIndividualValue.classList.add('individual-card-value');
+        cardIndividualValue.textContent = `Card Value: ${card.actualValue}`;
+        cardIndividualValue.style.color = '#FFD700'; 
+        const characterPath = document.createElement('div');
+        characterPath.classList.add('character-path');
+        characterPath.textContent = card.characterPath; 
+        characterPath.style.color = '#FFD700'; 
+
+        const gradeContainer = document.createElement('div');
+        gradeContainer.classList.add('grade-container');
+
+        const seventhGradeContainer = document.createElement('div');
+        seventhGradeContainer.classList.add('grade-column');
+
+        const eighthGradeContainer = document.createElement('div');
+        eighthGradeContainer.classList.add('grade-column');
+
+        const ninthGradeContainer = document.createElement('div');
+        ninthGradeContainer.classList.add('grade-column');
+
+        const characterClasses = card.characterPath.split(',');
+        characterClasses.forEach(characterClass => {
+            const characterClassTrimmed = characterClass.trim(); 
+            const characterLogo = document.createElement('img');
+            characterLogo.src = getCharacterLogo(characterClassTrimmed) || 'no.png'; 
+            characterLogo.alt = `Character Logo ${characterClassTrimmed}`;
+            characterLogo.classList.add('character-logo');
+
+            const classText = document.createElement('div');
+            classText.textContent = characterClassTrimmed;
+
+            const logoContainer = document.createElement('div'); 
+            logoContainer.appendChild(characterLogo);
+            logoContainer.appendChild(classText);
+            if (characterClassTrimmed.startsWith('7')) {
+                seventhGradeContainer.appendChild(logoContainer);
+            } else if (characterClassTrimmed.startsWith('8')) {
+                eighthGradeContainer.appendChild(logoContainer);
+            } else if (characterClassTrimmed.startsWith('9')) {
+                ninthGradeContainer.appendChild(logoContainer);
+            }
+        });
+
+        gradeContainer.appendChild(seventhGradeContainer);
+        gradeContainer.appendChild(eighthGradeContainer);
+        gradeContainer.appendChild(ninthGradeContainer);
+        cardElement.appendChild(cardName);
+        cardElement.appendChild(cardImageContainer);
+        cardImageContainer.appendChild(cardImage);
+        cardElement.appendChild(cardDescription);
+        cardElement.appendChild(cardIndividualValue);
+        cardElement.appendChild(characterPath); 
+        cardElement.appendChild(gradeContainer); 
+
+        resultsContainer.appendChild(cardElement);
+    }
+
+
+        function getCharacterLogo(characterClass) {
+            const logos = {
+                '71': '71.png', '72': '72.png', '73': '73.png', '74': '74.png', '75': '75.png', '76': '76.png', '77': '77.png', 'N/A': 'no.png',
+                '81': '81.png', '82': '82.png', '83': '83.png', '84': '84.png', '85': '85.png', '86': '86.png', '87': '87.png', 'N/A': 'no.png',
+                '91': '91.png', '92': '92.png', '93': '93.png', '94': '94.png', '95': '95.png', '96': '96.png', '97': '97.png', 'N/A': 'no.png'
+            };
+            return logos[characterClass] || 'no.png';
+        }
+
+        function showNextCard() {
+            if (currentIndex < cardsToShow.length - 1) {
+                currentIndex++;
+                showCard();
+            }
+        }
+
+        function showPreviousCard() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                showCard();
+            }
+        }
+
+        function getBorderColor(type) {
+            switch (type) {
+                case 'common':
+                    return 'gray';
+                case 'uncommon':
+                    return 'green';
+                case 'rare':
+                    return 'blue';
+                case 'event':
+                    return 'pink';
+                case 'epic':
+                    return 'purple';
+                case 'synergized':
+                    return '#9DCAEB';
+                case 'mythic':
+                    return '#FF2C2C';
+                case 'legendary':
+                    return 'gold';
+                default:
+                    return 'black';
+            }
+        }
+        generatePack();
+
+        function completeCollection() {
+    cardPool.forEach(card => {
+        if (!collection.includes(card.name)) {
+            collection.push(card.name);
+        }
+    });
+    localStorage.setItem('cardCollection', JSON.stringify(collection));
+    console.log("Collection completed!");
+}
+
+
+function redeemCode() {
+    const code = prompt('Enter your code:');
+    if (!code) return;
+    const normalizedCode = code.trim().toUpperCase();
+    if (codeRewards[normalizedCode]) {
+        let added = [];
+        codeRewards[normalizedCode].forEach(cardName => {
+            if (!collection.includes(cardName)) {
+                collection.push(cardName);
+                added.push(cardName);
+            }
+        });
+        localStorage.setItem('cardCollection', JSON.stringify(collection));
+        if (added.length > 0) {
+            alert('You have received: ' + added.join(', '));
+        } else {
+            alert('You already have all the cards from this code!');
+        }
+    } else {
+        alert('Invalid code.');
+    }
+}
+// --- END CODE REDEMPTION SYSTEM ---
+
+    </script>
+</body>
+</html>
